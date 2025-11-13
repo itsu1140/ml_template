@@ -1,36 +1,35 @@
-import argparse
+from dataclasses import dataclass
 from pathlib import Path
 
+import yaml
 from cookiecutter.main import cookiecutter
 
 
-def cookiecutter_setup(project_name: str, python_version: str) -> None:
-    output_dir = Path("..")
+@dataclass
+class proj_setting:
+    output_dir: str
+    project_name: str
+
+
+def main():
+    with Path.open("setting.yaml", "r") as f:
+        settings = proj_setting(**yaml.safe_load(f))
+
+    output_dir = Path(settings.output_dir)
     cookiecutter(
         template=".",
         output_dir=output_dir,
         no_input=True,
         extra_context={
-            "project_name": project_name,
-            "python_version": python_version,
+            "project_name": settings.project_name,
         },
     )
-    proj_dir = output_dir / project_name
+    proj_dir = output_dir / settings.project_name
     (proj_dir / "data").mkdir()
-
-    src_dirs = ["models", "plot", "data", "train", "utils"]
     src = proj_dir / "src"
-    for dir_name in src_dirs:
-        (src / dir_name).mkdir()
-        (src / dir_name / "__init__.py").touch()
-
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--project_name", required=True)
-    parser.add_argument("--python_version")
-    args = parser.parse_args()
-    cookiecutter_setup(args.project_name, args.python_version)
+    for directory in src.iterdir():
+        if directory.is_dir():
+            (directory / "__init__.py").touch()
 
 
 if __name__ == "__main__":

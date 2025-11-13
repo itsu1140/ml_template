@@ -16,9 +16,7 @@ uv sync
 - Setup project
 
 ```bash
-python project_setup.py --project_name PROJECT_NAME [OPTION]
-
-    --python_version
+python project_setup.py
 ```
 
-You can edit the destination directory in `project_setup.py`
+You can edit the project name and destination project directory in `setting.yaml`
